@@ -1,9 +1,11 @@
 package org.lamuela.commands;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.util.List;
 
 public class TestCommand extends ListenerAdapter {
 
@@ -18,13 +20,4 @@ public class TestCommand extends ListenerAdapter {
         event.reply(content).setEphemeral(true).queue();
     }
 
-    @Override
-    public void onButtonInteraction(ButtonInteractionEvent event) {
-        super.onButtonInteraction(event);
-    }
-
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        System.out.println(event.getMessage().getContentRaw());
-    }
 }
