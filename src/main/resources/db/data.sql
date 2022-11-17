@@ -1,0 +1,1 @@
+-- INSERT INTO users(discUser, token, username, password) VALUES ('Cogollitoo#2382', '123456789012345678901234567890', 'fravilpav', 'fravilpav');

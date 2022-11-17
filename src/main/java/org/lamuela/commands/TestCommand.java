@@ -1,11 +1,7 @@
 package org.lamuela.commands;
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-
-import java.util.List;
 
 public class TestCommand extends ListenerAdapter {
 
