@@ -3,13 +3,11 @@ package org.lamuela.commands;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.lamuela.api.DecideAPI;
 import org.lamuela.api.models.Option;
 import org.lamuela.api.models.Voting;
 import org.lamuela.statistics.ChartType;
 import org.lamuela.statistics.StatisticsManager;
-
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -21,6 +19,10 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.events.role.RoleCreateEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+
 public class CreateChannel extends ListenerAdapter{
     
     Boolean sendChannelBoolean=true;
@@ -96,7 +98,6 @@ public class CreateChannel extends ListenerAdapter{
             sendChannelBoolean=false;
         }
     }
-
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         String[] splittedId = event.getButton().getId().split("_");
