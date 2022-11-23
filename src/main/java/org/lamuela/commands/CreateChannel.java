@@ -19,9 +19,6 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.events.role.RoleCreateEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CreateChannel extends ListenerAdapter{
     
@@ -106,7 +103,7 @@ public class CreateChannel extends ListenerAdapter{
         }
 
         if(splittedId[0].equals("show") && splittedId[2].equals("graph")){
-            ChartType chartType = Arrays.asList(ChartType.values()).stream().filter(type -> type.name().toLowerCase().equals(splittedId[1].toLowerCase())).findFirst().get();
+            ChartType chartType = Arrays.asList(ChartType.values()).stream().filter(type -> type.name().equalsIgnoreCase(splittedId[1])).findFirst().get();
             StatisticsManager.showStatistic(event, DecideAPI.getVotingById(Integer.valueOf(splittedId[3])), chartType);
         } 
     }
