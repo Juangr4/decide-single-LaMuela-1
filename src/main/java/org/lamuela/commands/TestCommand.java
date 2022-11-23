@@ -1,17 +1,15 @@
 package org.lamuela.commands;
-
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-import java.util.List;
+
+import org.lamuela.api.DecideAPI;
 
 public class TestCommand extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        System.out.println(event.getName());
+        System.out.println(DecideAPI.getAllVotings());
         if(!event.getName().equals("test")) return;
         String content = "Hello World";
         if(event.getOption("content") != null) {
