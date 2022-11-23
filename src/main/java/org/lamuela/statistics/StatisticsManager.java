@@ -41,7 +41,6 @@ public class StatisticsManager {
             event.reply("¡Aquí está tu gráfico!").addFiles(FileUpload.fromData(file)).setEphemeral(true).queue();
         } catch (Exception e) {
             event.reply("Error mostrando imagen.").setEphemeral(true).queue();
-            e.printStackTrace();
         }
         
     }
