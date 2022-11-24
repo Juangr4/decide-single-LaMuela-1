@@ -24,10 +24,10 @@ public class LoginCommand extends ListenerAdapter {
         String token = login.getToken();
         String discUser = event.getMember().getEffectiveName();
         User user = new User();
-        user.setDiscUser(discUser);
-        user.setPassword(password);
-        user.setToken(token);
-        user.setUsername(username);
-        UserRepository.save(user);
+        // user.setDiscUser(discUser);
+        // user.setPassword(password);
+        // user.setToken(token);
+        // user.setUsername(username);
+        // UserRepository.save(user);
     }
 }
