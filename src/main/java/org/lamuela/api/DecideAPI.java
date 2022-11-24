@@ -52,8 +52,7 @@ public class DecideAPI {
     }
 
     public static Voting[] getAllVotings() {
-        HttpResponse<String> response = Unirest.get("/voting/")
-                .asString();
+        HttpResponse<String> response = Unirest.get("/voting/").asString();
         return getModel(response.getBody(), Voting[].class);
     }
 
