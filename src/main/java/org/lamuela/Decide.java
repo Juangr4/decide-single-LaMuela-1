@@ -6,7 +6,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.lamuela.commands.CommandManager;
+import org.lamuela.commands.CreateChannel;
 import org.lamuela.commands.TestCommand;
 
 
@@ -25,6 +30,7 @@ public class Decide {
     private static void registerCommands() {
         jda.addEventListener(new CommandManager());
         jda.addEventListener(new TestCommand());
+        jda.addEventListener(new CreateChannel());
     }
 
     private static void setupEnviroment() {
