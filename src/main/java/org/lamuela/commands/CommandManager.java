@@ -12,7 +12,8 @@ public class CommandManager extends ListenerAdapter {
     public void onGuildReady(GuildReadyEvent event) {
         event.getGuild().updateCommands().addCommands(
                 Commands.slash("test", "this is a test command")
-                        .addOption(OptionType.STRING, "content", "Show the content on a message")
+                        .addOption(OptionType.STRING, "content", "Show the content on a message"),
+                Commands.slash("createvoting", "Command to create a voting")
         ).queue();
     }
 
@@ -20,7 +21,8 @@ public class CommandManager extends ListenerAdapter {
     public void onGuildJoin(GuildJoinEvent event) {
         event.getGuild().updateCommands().addCommands(
                 Commands.slash("test", "this is a test command")
-                        .addOption(OptionType.STRING, "content", "Show the content on a message")
+                        .addOption(OptionType.STRING, "content", "Show the content on a message"),
+                Commands.slash("createvoting", "Command to create a voting")
         ).queue();
     }
 }
