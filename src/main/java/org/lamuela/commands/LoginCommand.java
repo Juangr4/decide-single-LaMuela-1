@@ -1,7 +1,7 @@
 package org.lamuela.commands;
 
 import org.lamuela.User.User;
-import org.lamuela.User.UserRepository;
+import org.lamuela.User.UserService;
 import org.lamuela.api.DecideAPI;
 import org.lamuela.api.models.LoginResponse;
 
@@ -24,10 +24,10 @@ public class LoginCommand extends ListenerAdapter {
         String token = login.getToken();
         String discUser = event.getMember().getEffectiveName();
         User user = new User();
-        // user.setDiscUser(discUser);
-        // user.setPassword(password);
-        // user.setToken(token);
-        // user.setUsername(username);
-        // UserRepository.save(user);
+        user.setDiscUser(discUser);
+        user.setPassword(password);
+        user.setToken(token);
+        user.setUsername(username);
+        UserService.save(user);
     }
 }
