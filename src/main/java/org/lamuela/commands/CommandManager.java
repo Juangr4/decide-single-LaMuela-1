@@ -15,7 +15,8 @@ public class CommandManager extends ListenerAdapter {
                         .addOption(OptionType.STRING, "content", "Show the content on a message"),
                 Commands.slash("login","command to log in decide platform")
                         .addOption(OptionType.STRING, "username", "Username to log in decide platform")
-                        .addOption(OptionType.STRING, "password", "Password to log in decide platform")
+                        .addOption(OptionType.STRING, "password", "Password to log in decide platform"),
+                Commands.slash("createvoting", "Command to create a voting")
         ).queue();
     }
 
@@ -26,7 +27,8 @@ public class CommandManager extends ListenerAdapter {
                         .addOption(OptionType.STRING, "content", "Show the content on a message"),
                 Commands.slash("login","command to log in decide platform")
                         .addOption(OptionType.STRING, "username", "Username to log in decide platform")
-                        .addOption(OptionType.STRING, "password", "Password to log in decide platform")
+                        .addOption(OptionType.STRING, "password", "Password to log in decide platform"),
+                Commands.slash("createvoting", "Command to create a voting")
         ).queue();
     }
 }
