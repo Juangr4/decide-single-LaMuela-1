@@ -8,6 +8,7 @@ import java.sql.Statement;
 public class SQLMethods {
 
     public static void main(String[] args){
+        
         String jdbcUrl = "jdbc:sqlite:C:\\Users\\kikov\\Desktop\\EGC\\decide-single-LaMuela-1\\src\\main\\resources\\db\\data.db";
         java.sql.Connection connection = null;
 
@@ -56,7 +57,8 @@ public class SQLMethods {
             statement.setString(4, password);
             statement.executeUpdate();
 
-        }catch(SQLException e){
+        }
+        catch(SQLException e){
 
             System.out.println("Error connecting to SQL Database");
             e.printStackTrace();

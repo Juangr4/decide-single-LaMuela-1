@@ -13,8 +13,8 @@ public class LoginCommand extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         String username = "";
         String password = "";
-        if(event.getOption("login") != null){
-            username = event.getOption("login").getAsString();
+        if(event.getOption("username") != null){
+            username = event.getOption("username").getAsString();
         }
         if(event.getOption("password") != null){
             password = event.getOption("password").getAsString();
@@ -24,6 +24,6 @@ public class LoginCommand extends ListenerAdapter {
         String discUser = event.getMember().getEffectiveName();
         SQLMethods.insertUser(discUser, token, username, password);
         String ephimeralmsg = "Se ha iniciado sesión con éxito";
-        event.reply(ephimeralmsg).setEphemeral(true); 
+        event.reply(ephimeralmsg).setEphemeral(true).queue();; 
     }
 }
