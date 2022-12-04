@@ -3,6 +3,8 @@ package org.lamuela.commands;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 import org.lamuela.api.DecideAPI;
 import org.lamuela.api.models.Option;
 import org.lamuela.api.models.Voting;
@@ -14,15 +16,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.MessageEmbedEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class CreateChannel extends ListenerAdapter{
@@ -114,24 +113,18 @@ public class CreateChannel extends ListenerAdapter{
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event){
-        Voting[] list= DecideAPI.getAllVotings();
-        String message="";
-        if(event.getAuthor().isBot() && !event.getMessage().getContentRaw().equals("")){  //Posibles cambios si se añade moderación
-            List<TextChannel> listChannel=event.getGuild().getTextChannelsByName("votaciones", false);
-            Integer listChannelSize=listChannel.size();
-            if(listChannelSize>1){
-                sendChannelBoolean=true;
-                for(Integer i=0; i<listChannelSize; i++){
-                TextChannel channel=listChannel.get(i);
-                channel.delete().reason("deber").queue();                
-                }
+    public void onModalInteraction(@NotNull ModalInteractionEvent event){
+        List<TextChannel> listAllChannel=event.getGuild().getTextChannelsByName("votaciones", false);
+        if(event.getModalId().equals("voting")){
+            Integer listChannelSize=listAllChannel.size();
+            for(Integer i=0; i<listChannelSize; i++){
+                TextChannel channel=listAllChannel.get(i);
+                channel.delete().reason("deber").queue();
+            }
+            if(listChannelSize==1){
                 event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getGuild().getRolesByName("Votaciones", false).get(0).getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
-            }
-            else{
-                String id= listChannel.get(0).getId();
-                createAllVoting(list, message, event.getGuild(), id);
-            }
+                sendChannelBoolean=true;
+            } 
         }
     }
 }
