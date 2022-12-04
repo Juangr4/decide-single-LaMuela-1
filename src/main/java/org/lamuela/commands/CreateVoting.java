@@ -1,6 +1,5 @@
 package org.lamuela.commands;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
