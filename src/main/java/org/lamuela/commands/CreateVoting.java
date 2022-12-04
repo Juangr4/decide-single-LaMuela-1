@@ -62,6 +62,7 @@ public class CreateVoting extends ListenerAdapter{
             DecideAPI.createVoting(name, description, question, List.of(options.split(",")));         
             
         }
+        
     }
 
 }
