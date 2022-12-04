@@ -24,7 +24,7 @@ public class Decide {
         setupEnviroment();
         setupDiscordBot();
         registerCommands();
-        SQLMethods.main(args);
+        SQLMethods.initDB();
     }
 
     private static void registerCommands() {

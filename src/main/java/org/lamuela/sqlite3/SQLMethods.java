@@ -4,13 +4,17 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SQLMethods {
 
-    public static void main(String[] args){
+    public static void initDB(){
         
         String jdbcUrl = "jdbc:sqlite:C:\\Users\\kikov\\Desktop\\EGC\\decide-single-LaMuela-1\\src\\main\\resources\\db\\data.db";
         java.sql.Connection connection = null;
+
+        Logger logger = Logger.getLogger(SQLMethods.class.getName());
 
         try{
 
@@ -23,9 +27,8 @@ public class SQLMethods {
 
         }catch(SQLException e){
 
-            System.out.println("Error connecting to SQL Database");
-            e.printStackTrace();
-
+            logger.log(Level.INFO, "Ha ocurrido un error al conectar con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
+            
         }finally{
 
             try{
@@ -34,8 +37,8 @@ public class SQLMethods {
 
             }catch(SQLException e){
 
-                System.out.println("Error connecting to SQL Database");
-                e.printStackTrace();
+                logger.log(Level.INFO, "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
+
             }
         }
     }
@@ -44,6 +47,8 @@ public class SQLMethods {
 
         String jdbcUrl = "jdbc:sqlite:C:\\Users\\kikov\\Desktop\\EGC\\decide-single-LaMuela-1\\src\\main\\resources\\db\\data.db";
         java.sql.Connection connection = null;
+
+        Logger logger = Logger.getLogger(SQLMethods.class.getName());
 
         try{
 
@@ -60,8 +65,7 @@ public class SQLMethods {
         }
         catch(SQLException e){
 
-            System.out.println("Error connecting to SQL Database");
-            e.printStackTrace();
+            logger.log(Level.INFO, "Ha ocurrido un error al conectar con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
 
         }finally{
 
@@ -71,8 +75,8 @@ public class SQLMethods {
 
             }catch(SQLException e){
 
-                System.out.println("Error connecting to SQL Database");
-                e.printStackTrace();
+                logger.log(Level.INFO, "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
+
             }
         }
 
