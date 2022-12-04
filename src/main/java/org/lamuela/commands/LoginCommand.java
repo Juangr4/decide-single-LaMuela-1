@@ -24,6 +24,6 @@ public class LoginCommand extends ListenerAdapter {
         String discUser = event.getMember().getEffectiveName();
         SQLMethods.insertUser(discUser, token, username, password);
         String ephimeralmsg = "Se ha iniciado sesión con éxito";
-        event.reply(ephimeralmsg).setEphemeral(true).queue();; 
+        event.reply(ephimeralmsg).setEphemeral(true).queue();
     }
 }

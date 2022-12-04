@@ -9,9 +9,13 @@ import java.util.logging.Logger;
 
 public class SQLMethods {
 
+    private SQLMethods(){};
+
+    private static final String jdbcUrl = "jdbc:sqlite:src/main/resources/data.db";
+
+
     public static void initDB(){
         
-        String jdbcUrl = "jdbc:sqlite:C:\\Users\\kikov\\Desktop\\EGC\\decide-single-LaMuela-1\\src\\main\\resources\\db\\data.db";
         java.sql.Connection connection = null;
 
         Logger logger = Logger.getLogger(SQLMethods.class.getName());
