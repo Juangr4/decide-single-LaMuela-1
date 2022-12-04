@@ -11,7 +11,7 @@ public class SQLMethods {
 
     private SQLMethods(){};
 
-    private static final String jdbcUrl = "jdbc:sqlite:src/main/resources/data.db";
+    private static final String JDBC_URL = "jdbc:sqlite:src/main/resources/data.db";
 
 
     public static void initDB(){
@@ -22,7 +22,7 @@ public class SQLMethods {
 
         try{
 
-            connection = DriverManager.getConnection(jdbcUrl);
+            connection = DriverManager.getConnection(JDBC_URL);
             Statement statement = connection.createStatement();
             statement.setQueryTimeout(30); 
 
@@ -41,7 +41,7 @@ public class SQLMethods {
 
             }catch(SQLException e){
 
-                logger.log(Level.INFO, "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
+                logger.log(Level.INFO, "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde", e);
 
             }
         }
@@ -49,14 +49,13 @@ public class SQLMethods {
 
     public static void insertUser(String discUser, String token, String username, String password){
 
-        String jdbcUrl = "jdbc:sqlite:C:\\Users\\kikov\\Desktop\\EGC\\decide-single-LaMuela-1\\src\\main\\resources\\db\\data.db";
         java.sql.Connection connection = null;
 
         Logger logger = Logger.getLogger(SQLMethods.class.getName());
 
         try{
 
-            connection = DriverManager.getConnection(jdbcUrl);
+            connection = DriverManager.getConnection(JDBC_URL);
             String query = "insert into user (discUser, token, username, password) values (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 
