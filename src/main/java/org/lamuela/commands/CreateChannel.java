@@ -1,5 +1,6 @@
 package org.lamuela.commands;
 
+import java.sql.Time;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class CreateChannel extends ListenerAdapter{
     public void onRoleCreate(RoleCreateEvent event){
         List<TextChannel> listChannel=event.getGuild().getTextChannelsByName("votaciones", false);
         if(!channelCreateVotaciones(event.getGuild().getTextChannels())){
-            event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getGuild().getRolesByName("Votaciones", false).get(0).getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
+            event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getRole().getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
         }
         else{
             Integer listChannelSize=listChannel.size();
@@ -58,8 +59,8 @@ public class CreateChannel extends ListenerAdapter{
                     TextChannel channel=listChannel.get(i);
                     channel.delete().reason("deber").queue();
                 }
-                event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getGuild().getRolesByName("Votaciones", false).get(0).getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
                 sendRoleBoolean= false;
+                event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getRole().getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
             }
         }
     }
