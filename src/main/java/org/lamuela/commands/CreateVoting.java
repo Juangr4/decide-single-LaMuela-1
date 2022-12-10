@@ -17,35 +17,39 @@ public class CreateVoting extends ListenerAdapter{
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (event.getName().equals("createvoting")) {
-            TextInput name = TextInput.create("name", "Name", TextInputStyle.SHORT)
-                    .setMinLength(1)
-                    .setRequired(true)
-                    .build();
-
-            TextInput description = TextInput.create("description", "Description", TextInputStyle.PARAGRAPH)
-                    .setMinLength(1)
-                    .setRequired(true)
-                    .build();
-            
-            TextInput question = TextInput.create("question", "Question", TextInputStyle.SHORT)
-                    .setPlaceholder("Question of the voting")
-                    .setMinLength(1)
-                    .setRequired(true)
-                    .build();
-
-            TextInput option = TextInput.create("options", "Options", TextInputStyle.PARAGRAPH)
-                    .setPlaceholder("Options")
-                    .setMinLength(1)
-                    .setRequired(true)
-                    .build();            
-
-            Modal modal = Modal.create("voting", "Voting")
-                    .addActionRows(ActionRow.of(name),ActionRow.of(description),ActionRow.of(question), ActionRow.of(option))
-                    .build();
-
-            event.replyModal(modal).queue();
+        if (!event.getName().equals("createvoting")) return;
+        if (event.getMember().getRoles().stream().noneMatch(r -> r.getName().equals("Votaciones"))) {
+            event.reply("No puedes usar este comando.").setEphemeral(true).queue();
+            return;
         }
+
+        TextInput name = TextInput.create("name", "Name", TextInputStyle.SHORT)
+                .setMinLength(1)
+                .setRequired(true)
+                .build();
+
+        TextInput description = TextInput.create("description", "Description", TextInputStyle.PARAGRAPH)
+                .setMinLength(1)
+                .setRequired(true)
+                .build();
+
+        TextInput question = TextInput.create("question", "Question", TextInputStyle.SHORT)
+                .setPlaceholder("Question of the voting")
+                .setMinLength(1)
+                .setRequired(true)
+                .build();
+
+        TextInput option = TextInput.create("options", "Options", TextInputStyle.PARAGRAPH)
+                .setPlaceholder("Options")
+                .setMinLength(1)
+                .setRequired(true)
+                .build();
+
+        Modal modal = Modal.create("voting", "Voting")
+                .addActionRows(ActionRow.of(name),ActionRow.of(description),ActionRow.of(question), ActionRow.of(option))
+                .build();
+
+        event.replyModal(modal).queue();
     }
     
     @Override
