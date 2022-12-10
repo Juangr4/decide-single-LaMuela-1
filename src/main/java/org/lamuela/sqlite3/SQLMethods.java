@@ -2,6 +2,7 @@ package org.lamuela.sqlite3;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -83,6 +84,46 @@ public class SQLMethods {
             }
         }
 
+    }
+
+    public static String getTokenByDiscUser(String discUser){
+
+        java.sql.Connection connection = null;
+
+        Logger logger = Logger.getLogger(SQLMethods.class.getName());
+
+        String token = null;
+
+        try{
+
+            connection = DriverManager.getConnection(JDBC_URL);
+            PreparedStatement statement = connection.prepareStatement("select token from user where discUser = ?");
+
+            statement.setString(1, discUser);
+
+            ResultSet rs = statement.executeQuery();
+
+            token = rs.getString(1);
+
+        }
+        catch(SQLException e){
+
+            logger.log(Level.INFO, "Ha ocurrido un error al conectar con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
+
+        }finally{
+
+            try{
+
+                if(connection != null) connection.close();
+
+            }catch(SQLException e){
+
+                logger.log(Level.INFO, "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde", e); 
+
+            }
+        }
+
+        return token;
     }
     
 }

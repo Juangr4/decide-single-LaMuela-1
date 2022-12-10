@@ -10,6 +10,8 @@ import org.lamuela.commands.CommandManager;
 import org.lamuela.commands.CreateChannel;
 import org.lamuela.commands.CreateVoting;
 import org.lamuela.commands.LoginCommand;
+import org.lamuela.commands.ManageVoting;
+import org.lamuela.commands.PerformVoting;
 import org.lamuela.commands.TestCommand;
 import org.lamuela.sqlite3.SQLMethods;
 
@@ -33,6 +35,8 @@ public class Decide {
         jda.addEventListener(new CreateChannel());
         jda.addEventListener(new CreateVoting());
         jda.addEventListener(new LoginCommand());
+        jda.addEventListener(new ManageVoting());
+        jda.addEventListener(new PerformVoting());
     }
 
     private static void setupEnviroment() {
