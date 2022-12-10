@@ -57,76 +57,22 @@ public class ManageVoting extends ListenerAdapter{
         Voting voting = DecideAPI.getVotingById(votingId);
         String question = voting.getQuestion().getDesc();
         List<Option> answers= voting.getQuestion().getOptions();
-        EmbedBuilder vote = new EmbedBuilder().setDescription("Escoja una de las siguientes opciones");
+        EmbedBuilder vote = new EmbedBuilder().setTitle(question).setDescription("Escoja una de las siguientes opciones");
 
-        List<ActionRow> ar = new ArrayList<>();
-        int k = answers.size() / 5;
-        int r = (answers.size()%5);
+        List<ActionRow> actionRows = new ArrayList<>();
+        List<Button> actual = new ArrayList<>();
 
-        if(r != 0){ //Si el número de opciones no es múltiplo de 5 tengo q tener en cuenta la franja de menos de 5 botones
-
-            for (int i = 0; i < k + 1; i++){ //Bucle for para recorrer cada bloque de 5 opciones
-
-                if(i == k){ //Compruebo si es el bloque de menos de 5 opciones
-
-                    List<Button> list = new ArrayList<>();
-
-                    for (int j = i*5; j < r + (5 * i); j++){ //Recorro las opciones, al ser menos de 5, uso r en la comparación para q no se pase del número de opciones
-
-                        String optionId = "Voting_" + voting.getId() +"_option_" + answers.get(j).getNumber().toString();
-                        Button button = Button.secondary(optionId, answers.get(j).getOption());
-                        list.add(button);
-
-                    }
-
-                    ActionRow buttonAr = ActionRow.of(list);
-                    ar.add(buttonAr);
-
-                }else{
-
-                    List<Button> list = new ArrayList<>();
-
-                    for (int j = i*5; j < 5 + (5 * i); j++){
-
-                        String optionId = "Voting_" + voting.getId() +"_option_" + answers.get(j).getNumber().toString();
-                        Button button = Button.secondary(optionId, answers.get(j).getOption());
-                        list.add(button);
-
-                    }
-
-                    ActionRow buttonAr = ActionRow.of(list);
-                    ar.add(buttonAr);
-
-                }
-
+        for(int i=0; i<answers.size(); i++) {
+            if(i%5 == 0) {
+                actionRows.add(ActionRow.of(actual));
+                actual = new ArrayList<>();
             }
-
-        }else{
-
-            for (int i = 0; i < k; i++){
-
-                List<Button> list = new ArrayList<>();
-
-                for (int j = i*5; j < 5 + i; j++){
-
-                    String optionId = "Voting_" + voting.getId() +"_option_" + answers.get(j).getNumber().toString();
-                    Button button = Button.secondary(optionId, answers.get(j).getOption());
-                    list.add(button);
-
-                }
-
-                ActionRow buttonAr = ActionRow.of(list);
-                ar.add(buttonAr);
-
-            }
-
+            actual.add(Button.secondary(String.format("Voting_%d_option_%d", votingId, answers.get(i).getNumber()), answers.get(i).getOption()));
         }
-
-        String ephimeralmsg = "Se ha iniciado la votación";
-        event.reply(ephimeralmsg).setEphemeral(true).queue();
-
         DecideAPI.updateVoting(voting, "start");
-        event.getGuild().getTextChannelById(event.getChannel().getId()).sendMessageEmbeds(vote.build()).setContent(question).setComponents(ar).queue();
+
+        event.reply("Se ha iniciado la votación").setEphemeral(true).queue();
+        event.getChannel().sendMessageEmbeds(vote.build()).setContent(question).setComponents(actionRows).queue();
 
     }
 
