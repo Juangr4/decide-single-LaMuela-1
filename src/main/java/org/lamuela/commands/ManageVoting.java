@@ -63,7 +63,7 @@ public class ManageVoting extends ListenerAdapter{
         List<Button> actual = new ArrayList<>();
 
         for(int i=0; i<answers.size(); i++) {
-            if(i%5 == 0) {
+            if(i%5 == 0 && !actual.isEmpty()) {
                 actionRows.add(ActionRow.of(actual));
                 actual = new ArrayList<>();
             }
