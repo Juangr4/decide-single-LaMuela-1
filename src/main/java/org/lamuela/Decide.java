@@ -6,9 +6,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-
-import java.io.File;
-
 import org.lamuela.commands.CommandManager;
 import org.lamuela.commands.CreateChannel;
 import org.lamuela.commands.CreateVoting;
