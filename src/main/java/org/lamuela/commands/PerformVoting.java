@@ -29,7 +29,7 @@ public class PerformVoting extends ListenerAdapter{
 
             for(Option op : options){
 
-                if (op.getNumber() == optionId){
+                if (op.getNumber().equals(optionId)){
 
                     option = op;
 

@@ -40,8 +40,7 @@ public class ManageVoting extends ListenerAdapter{
 
         if(getButtonId[0].equals("end") && getButtonId[1].equals("voting")){
 
-            String messageId = event.getMessageId();
-            endVoting(messageId, Integer.parseInt(getButtonId[2]), event);
+            endVoting(Integer.parseInt(getButtonId[2]), event);
 
             List<LayoutComponent> list =  event.getMessage().getComponents();
             ActionRow ar = ActionRow.of(list.get(0).getButtons().get(1));
@@ -131,7 +130,7 @@ public class ManageVoting extends ListenerAdapter{
 
     }
 
-    public void endVoting(String messageId, Integer votingId, ButtonInteractionEvent event){
+    public void endVoting(Integer votingId, ButtonInteractionEvent event){
 
         Logger logger = Logger.getLogger(ManageVoting.class.getName());
 
