@@ -14,9 +14,9 @@ public class SQLMethods {
 
     private static final String JDBC_URL = "jdbc:sqlite:src/main/resources/data.db";
 
-    private static final String errorMsg1 = "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde";
+    private static final String ErrorMsg1 = "Ha ocurrido un error al cerrar la conexión con la base de datos, porfavor inténtelo de nuevo más tarde";
 
-    private static final String errorMsg2 = "Ha ocurrido un error al conectar con la base de datos, porfavor inténtelo de nuevo más tarde";
+    private static final String ErrorMsg2 = "Ha ocurrido un error al conectar con la base de datos, porfavor inténtelo de nuevo más tarde";
 
     public static void initDB(){
         
@@ -35,7 +35,7 @@ public class SQLMethods {
 
         }catch(SQLException e){
 
-            logger.log(Level.INFO, errorMsg2, e); 
+            logger.log(Level.INFO, ErrorMsg2, e); 
             
         }finally{
 
@@ -45,7 +45,7 @@ public class SQLMethods {
 
             }catch(SQLException e){
 
-                logger.log(Level.INFO, errorMsg1, e);
+                logger.log(Level.INFO, ErrorMsg1, e);
 
             }
         }
@@ -72,7 +72,7 @@ public class SQLMethods {
         }
         catch(SQLException e){
 
-            logger.log(Level.INFO, errorMsg2, e); 
+            logger.log(Level.INFO, ErrorMsg2, e); 
 
         }finally{
 
@@ -82,7 +82,7 @@ public class SQLMethods {
 
             }catch(SQLException e){
 
-                logger.log(Level.INFO, errorMsg1, e); 
+                logger.log(Level.INFO, ErrorMsg1, e); 
 
             }
         }
@@ -111,7 +111,7 @@ public class SQLMethods {
         }
         catch(SQLException e){
 
-            logger.log(Level.INFO, errorMsg2, e); 
+            logger.log(Level.INFO, ErrorMsg2, e); 
 
         }finally{
 
@@ -121,7 +121,7 @@ public class SQLMethods {
 
             }catch(SQLException e){
 
-                logger.log(Level.INFO, errorMsg1, e); 
+                logger.log(Level.INFO, ErrorMsg1, e); 
 
             }
         }
