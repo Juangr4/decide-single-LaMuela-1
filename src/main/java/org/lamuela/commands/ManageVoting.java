@@ -69,6 +69,9 @@ public class ManageVoting extends ListenerAdapter{
             }
             actual.add(Button.secondary(String.format("Voting_%d_option_%d", votingId, answers.get(i).getNumber()), answers.get(i).getOption()));
         }
+        if(!actual.isEmpty()){
+            actionRows.add(ActionRow.of(actual));
+        }
         DecideAPI.updateVoting(voting, "start");
 
         event.reply("Se ha iniciado la votación").setEphemeral(true).queue();
