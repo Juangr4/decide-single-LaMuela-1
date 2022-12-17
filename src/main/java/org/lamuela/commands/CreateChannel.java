@@ -1,12 +1,14 @@
 package org.lamuela.commands;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import org.jetbrains.annotations.NotNull;
+import org.lamuela.Storage;
 import org.lamuela.api.DecideAPI;
-import org.lamuela.api.models.Option;
 import org.lamuela.api.models.Voting;
 import org.lamuela.statistics.ChartType;
 import org.lamuela.statistics.StatisticsManager;
@@ -15,95 +17,85 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
-public class CreateChannel extends ListenerAdapter{
-    
-    Boolean sendChannelBoolean=true;
-    Boolean sendRoleBoolean=true;
+public class CreateChannel extends ListenerAdapter {
+
+    private static final String ROLE_NAME = "voting-admin";
+
+    private static final String CATEGORY_NAME = "decide-voting";
+
+    private static final String CHANNEL_NAME = "voting";
+
+    private static int lastId = -1;
+
+    private static void initBot(Guild guild) {
+        guild.getRolesByName(ROLE_NAME, true).forEach(v -> v.delete().queue());
+        guild.getCategoriesByName(CATEGORY_NAME, true).forEach(category -> {
+            category.getChannels().forEach(c -> c.delete().queue());
+            category.delete().queue();
+        });
+
+        Role role = guild.createRole().setName(ROLE_NAME).complete();
+        Storage.ADMIN_VOTING_ROLE = role.getId();
+        Category category = guild.createCategory(CATEGORY_NAME).complete();
+        Storage.VOTING_CATEGORY = category.getId();
+        TextChannel channel = category.createTextChannel(CHANNEL_NAME).addPermissionOverride(
+                guild.getPublicRole(),
+                0,
+                Permission.VIEW_CHANNEL.getRawValue()
+        ).addPermissionOverride(
+                role,
+                Permission.VIEW_CHANNEL.getRawValue(),
+                0
+        ).complete();
+        Storage.ADMIN_VOTING_CHANNEL = channel.getId();
+
+        for (Voting voting: DecideAPI.getAllVotings()) {
+            channel.sendMessageEmbeds(generateEmbed(voting)).addActionRow(
+                    Button.primary(String.format("start_voting_%d", voting.getId()), "Empezar votacion"),
+                    Button.danger(String.format("stop_voting_%d", voting.getId()), "Terminar votacion"),
+                    Button.success(String.format("stats_voting_%d", voting.getId()), "Obtener resultados")
+            ).queue();
+            lastId = Math.max(lastId, voting.getId());
+        }
+    }
 
     @Override
     public void onGuildReady(GuildReadyEvent event){
-        List<Role> listRole=event.getGuild().getRolesByName("Votaciones", false);
-        if(listRole.isEmpty()){
-            event.getGuild().createRole().setName("Votaciones").queue();
-        }
-        else{
-            Integer listRoleSize=listRole.size();
-            for(Integer i=0; i<listRoleSize; i++){
-                Role role=listRole.get(i);
-                role.delete().reason("deber").queue();
-            }
-            event.getGuild().createRole().setName("Votaciones").queue();
-        }
+        initBot(event.getGuild());
     }
 
     @Override
-    public void onRoleCreate(RoleCreateEvent event){
-        List<TextChannel> listChannel=event.getGuild().getTextChannelsByName("votaciones", false);
-        if(!channelCreateVotaciones(event.getGuild().getTextChannels())){
-            event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getRole().getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
-        }
-        else{
-            Integer listChannelSize=listChannel.size();
-            if(sendRoleBoolean){
-                for(Integer i=0; i<listChannelSize; i++){
-                    TextChannel channel=listChannel.get(i);
-                    channel.delete().reason("deber").queue();
-                }
-                sendRoleBoolean= false;
-                event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getRole().getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
-            }
-        }
-    }
-
-    public Boolean channelCreateVotaciones(List<TextChannel> listChannel){
-        Boolean channelName= false;
-        for(GuildChannel channel: listChannel){
-            if(channel.getName().equals("votaciones")){
-                channelName= true;
-            }
-        }
-        return channelName;
+    public void onGuildJoin(GuildJoinEvent event) {
+        initBot(event.getGuild());
     }
 
     @Override
-    public void onChannelCreate(ChannelCreateEvent event){
-        Voting[] list=DecideAPI.getAllVotings();
-        String message="";
-        if(sendChannelBoolean){
-            createAllVoting(list, message, event.getGuild(), event.getChannel().getId());
-            sendChannelBoolean=false;
-        }
-    }
-
-    public void createAllVoting(Voting[] list, String message, Guild eventGuild, String id){
-        for (Integer i=0; i<list.length; i++){
-            message+="`Voting`\n";
-            message+="`"+list[i].getQuestion().getDesc()+":`"+"\n";
-            for (String im: list[i].getQuestion().getOptions().stream().map(Option::getOption).collect(Collectors.toList())){
-                message+="`"+im+"`"+"\n";
+    public void onModalInteraction(@NotNull ModalInteractionEvent event){
+        if(!event.getModalId().equals("voting"))    return;
+        int lastSend = lastId;
+        TextChannel channel = event.getGuild().getTextChannelById(Storage.ADMIN_VOTING_CHANNEL);
+        for(Voting voting: DecideAPI.getAllVotings()) {
+            if(voting.getId() > lastSend) {
+                channel.sendMessageEmbeds(generateEmbed(voting)).addActionRow(
+                        Button.primary(String.format("start_voting_%d", voting.getId()), "Empezar votacion"),
+                        Button.danger(String.format("stop_voting_%d", voting.getId()), "Terminar votacion"),
+                        Button.success(String.format("stats_voting_%d", voting.getId()), "Obtener resultados")
+                ).queue();
+                lastId = Math.max(lastId, voting.getId());
             }
-        EmbedBuilder button= new EmbedBuilder().setDescription(message);
-        Button buttonStart = Button.primary("start_voting_"+list[i].getId(), "Start Button");
-        Button buttonEnd = Button.danger("end_voting_"+list[i].getId(), "End Button");
-        Button buttonGraphic = Button.success("start_graphic_"+list[i].getId(), "Graphic Button");
-        eventGuild.getTextChannelById(id).sendMessageEmbeds(button.build()).setActionRow(buttonStart, buttonEnd, buttonGraphic).queue();
-        message="";
         }
     }
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         String[] splittedId = event.getButton().getId().split("_");
-        if(splittedId[0].equals("start") && splittedId[1].equals("graphic") ){   //Si es un button graphic
+        if(splittedId[0].equals("stats") && splittedId[1].equals("voting") ){   //Si es un button graphic
             StatisticsManager.sendGraphTypeSelector(event, splittedId);
         }
         if(splittedId[0].equals("show") && splittedId[2].equals("graph")){
@@ -112,19 +104,20 @@ public class CreateChannel extends ListenerAdapter{
         } 
     }
 
-    @Override
-    public void onModalInteraction(@NotNull ModalInteractionEvent event){
-        List<TextChannel> listAllChannel=event.getGuild().getTextChannelsByName("votaciones", false);
-        if(event.getModalId().equals("voting")){
-            Integer listChannelSize=listAllChannel.size();
-            for(Integer i=0; i<listChannelSize; i++){
-                TextChannel channel=listAllChannel.get(i);
-                channel.delete().reason("deber").queue();
-            }
-            if(listChannelSize==1){
-                event.getGuild().createTextChannel("votaciones").addPermissionOverride(event.getGuild().getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue()).addRolePermissionOverride(event.getGuild().getRolesByName("Votaciones", false).get(0).getIdLong(), Permission.VIEW_CHANNEL.getRawValue(), 0).queue();
-                sendChannelBoolean=true;
-            } 
+    public static MessageEmbed generateEmbed(Voting voting) {
+        EmbedBuilder builder = new EmbedBuilder();
+        builder.setTitle(voting.getName());
+        builder.setDescription(voting.getDesc());
+        if(Objects.nonNull(voting.getStartDate())) {
+            builder.addField("Fecha comienzo", voting.getStartDate(), true);
+        } else {
+            builder.addField("Fecha comienzo", "No empezada", true);
         }
+        if(Objects.nonNull(voting.getEndDate())) {
+            builder.addField("Fecha final", voting.getEndDate(), true);
+        } else {
+            builder.addField("Fecha final", "No terminada", true);
+        }
+        return builder.build();
     }
 }

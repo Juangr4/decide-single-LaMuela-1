@@ -2,7 +2,9 @@ package org.lamuela.commands;
 
 import java.util.List;
 
+import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
+import org.lamuela.Storage;
 import org.lamuela.api.DecideAPI;
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -18,7 +20,8 @@ public class CreateVoting extends ListenerAdapter{
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (!event.getName().equals("createvoting")) return;
-        if (event.getMember().getRoles().stream().noneMatch(r -> r.getName().equals("Votaciones"))) {
+        if (event.getMember().getRoles().stream().noneMatch(r -> r.getId().equals(Storage.ADMIN_VOTING_ROLE)) ||
+            !event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
             event.reply("No puedes usar este comando.").setEphemeral(true).queue();
             return;
         }
