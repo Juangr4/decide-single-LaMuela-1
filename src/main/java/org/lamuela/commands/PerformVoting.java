@@ -1,6 +1,10 @@
 package org.lamuela.commands;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.lamuela.api.DecideAPI;
 import org.lamuela.api.models.Option;
@@ -10,42 +14,38 @@ import org.lamuela.sqlite3.SQLMethods;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
-public class PerformVoting extends ListenerAdapter{
+public class PerformVoting extends ListenerAdapter {
+
+    private final Pattern VOTE_PATTERN = Pattern.compile("^voting_(\\d+)_option_(\\d+)$");
 
     @Override
-    public void onButtonInteraction(ButtonInteractionEvent event){
+    public void onButtonInteraction(ButtonInteractionEvent event) {
 
-        String[] optionName = event.getButton().getId().split("_");
+        Matcher matcher = VOTE_PATTERN.matcher(event.getButton().getId());
 
-        if(optionName[0].equals("Voting") && optionName[2].equals("option")){
+        if(!matcher.matches())  return;
 
-            Integer votingId = Integer.parseInt(optionName[1]);
-            Voting voting = DecideAPI.getVotingById(votingId);
-        
-            Integer optionId = Integer.parseInt(optionName[3]);
-            List<Option> options = voting.getQuestion().getOptions();
-
-            Option option = null;
-
-            for(Option op : options){
-
-                if (op.getNumber().equals(optionId)){
-
-                    option = op;
-
-                }
-
-            }
-
-            String discUser = event.getMember().getUser().getName();
-            String token = SQLMethods.getTokenByDiscUser(discUser);
-
-            DecideAPI.performVote(voting, option, token);
-
-            String ephimeralmsg = "Se ha realizado la votación con éxito";
-            event.reply(ephimeralmsg).setEphemeral(true).queue();
-
+        String token = SQLMethods.getTokenByDiscUser(event.getMember().getUser().getName());
+        if(Objects.isNull(token)) {
+            event.reply("Tienes que estar logeado para votar").setEphemeral(true).queue();
+            return;
         }
+
+        int votingId = Integer.parseInt(matcher.group(1));
+        int optionNumber = Integer.parseInt(matcher.group(2));
+
+        Voting voting = DecideAPI.getVotingById(votingId);
+
+        Optional<Option> option = voting.getQuestion().getOptions().stream()
+                .filter(op -> op.getNumber() == optionNumber)
+                .findFirst();
+
+        option.ifPresent(value -> {
+            DecideAPI.addCensus(voting, List.of(DecideAPI.getUser(token)));
+            DecideAPI.performVote(voting, value, token);
+        });
+
+        event.reply("Votacion realizada correctamente").setEphemeral(true).queue();
 
     }
 
