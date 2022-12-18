@@ -14,10 +14,19 @@ import java.util.stream.Collectors;
 
 public class DecideAPI {
 
+    private DecideAPI(){}
+
+    private static String contentType = "application/json; charset=utf-8";
+    private static String authHeader = "Authorization";
+
+    private static String getTokenHeader(String token) {
+        return "Token " + token;
+    }
+
     private static String adminToken;
 
     private static String getAdminToken() {
-        if(adminToken == null)  adminToken = login(Decide.env.get("decide_user"), Decide.env.get("decide_password")).getToken();
+        if(adminToken == null)  adminToken = login(Decide.getEnv().get("decide_user"), Decide.getEnv().get("decide_password")).getToken();
         return adminToken;
     }
 
@@ -45,7 +54,7 @@ public class DecideAPI {
 
     public static User getUser(String token) {
         HttpResponse<String> response = Unirest.post("/authentication/getuser/")
-                .contentType("application/json; charset=utf-8")
+                .contentType(contentType)
                 .body(String.format("{\"token\":\"%s\"}", token))
                 .asString();
         return getModel(response.getBody(), User.class);
@@ -64,22 +73,22 @@ public class DecideAPI {
     }
 
     public static void createVoting(String name, String description, String question, List<String> options) {
-        HttpResponse<String> response = Unirest.post("/voting/")
-                .header("Authorization", "Token " + getAdminToken())
-                .contentType("application/json; charset=utf-8")
+        Unirest.post("/voting/")
+                .header(authHeader, getTokenHeader(getAdminToken()))
+                .contentType(contentType)
                 .body(String.format(
                         "{\"name\":\"%s\",\"desc\":\"%s\",\"question\":\"%s\",\"question_opt\":%s}",
                         name,
                         description,
                         question,
-                        options.stream().map(i -> "\"" + i + "\"").collect(Collectors.toList())))
+                        options.stream().map(i -> "\"" + i + "\"").toList()))
                 .asString();
     }
 
     public static String updateVoting(Voting voting, String action) {
         HttpResponse<String> response = Unirest.put(String.format("/voting/%d/", voting.getId()))
-                .header("Authorization", "Token " + getAdminToken())
-                .contentType("application/json; charset=utf-8")
+                .header(authHeader, getTokenHeader(getAdminToken()))
+                .contentType(contentType)
                 .body(String.format("{\"action\":\"%s\"}", action))
                 .asString();
         return response.getBody();
@@ -87,19 +96,20 @@ public class DecideAPI {
 
     public static String addCensus(Voting voting, List<User> users) {
         HttpResponse<String> response = Unirest.post("/census/")
-                .header("Authorization", "Token " + getAdminToken())
-                .contentType("application/json; charset=utf-8")
+                .header(authHeader, getTokenHeader(getAdminToken()))
+                .contentType(contentType)
                 .body(String.format(
                         "{\"voting_id\":%d,\"voters\":%s}",
                         voting.getId(),
-                        users.stream().map(User::getId).collect(Collectors.toList())
+                        users.stream().map(User::getId).toList()
                 ))
                 .asString();
         return response.getBody();
     }
 
     public static String performVote(Voting voting, Option option, String voterToken) {
-        BigInteger a, b;
+        BigInteger a;
+        BigInteger b;
         try {
             BigInteger p = voting.getPubKey().getP();
             BigInteger g = voting.getPubKey().getG();
@@ -115,8 +125,8 @@ public class DecideAPI {
             return null;
         }
         HttpResponse<String> response = Unirest.post("/gateway/store/")
-                .header("Authorization", "Token " + voterToken)
-                .contentType("application/json; charset=utf-8")
+                .header(authHeader, getTokenHeader(voterToken))
+                .contentType(contentType)
                 .body(String.format(
                         "{\"vote\":{\"a\":%s,\"b\":%s},\"voting\":%d,\"voter\":%d,\"token\":\"%s\"}",
                         a,

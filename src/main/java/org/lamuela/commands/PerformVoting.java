@@ -16,12 +16,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class PerformVoting extends ListenerAdapter {
 
-    private final Pattern VOTE_PATTERN = Pattern.compile("^voting_(\\d+)_option_(\\d+)$");
+    private final Pattern voteButtonPattern = Pattern.compile("^voting_(\\d+)_option_(\\d+)$");
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
-        Matcher matcher = VOTE_PATTERN.matcher(event.getButton().getId());
+        Matcher matcher = voteButtonPattern.matcher(event.getButton().getId());
 
         if(!matcher.matches())  return;
 

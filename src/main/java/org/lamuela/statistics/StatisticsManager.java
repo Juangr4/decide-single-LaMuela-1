@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.lamuela.api.DecideAPI;
 import org.lamuela.api.models.Option;
-import org.lamuela.api.models.Question;
 import org.lamuela.api.models.Voting;
 
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -47,7 +46,6 @@ public class StatisticsManager {
 
     public static String getGraphOfVotingId(int id, ChartType type) throws Exception{
         Voting voting = DecideAPI.getVotingById(id);
-        //Voting voting = getExampleVoting();
         switch (type) {
             case BAR:
                 return getBarGraph(voting);
@@ -81,7 +79,7 @@ public class StatisticsManager {
         String options = "";
         String datasets = "";
         for (Option option : voting.getQuestion().getOptions()){
-            options += String.format("'%s',", option.getOption());
+            options += String.format("'%s',", option.getAnswer());
             datasets += String.format("'%d',", option.getNumber());
         }
         options = options.substring(0, options.length()-1);
@@ -93,7 +91,7 @@ public class StatisticsManager {
     private static String getHorizontalBarGraph(Voting voting) {
         String datasets = "";
         for(Option o : voting.getQuestion().getOptions()){
-            String dataset = String.format("{label:'%s',data:[%d]},", o.getOption(), o.getNumber());
+            String dataset = String.format("{label:'%s',data:[%d]},", o.getAnswer(), o.getNumber());
             datasets+=dataset;
         }
         datasets = datasets.substring(0, datasets.length()-1);
@@ -105,7 +103,7 @@ public class StatisticsManager {
         String options = "";
         String datasets = "";
         for (Option option : voting.getQuestion().getOptions()){
-            options += String.format("'%s',", option.getOption());
+            options += String.format("'%s',", option.getAnswer());
             datasets += String.format("'%d',", option.getNumber());
         }
         options = options.substring(0, options.length()-1);
@@ -120,7 +118,7 @@ public class StatisticsManager {
         String options = "";
         String datasets = "";
         for (Option option : voting.getQuestion().getOptions()){
-            options += String.format("'%s',", option.getOption());
+            options += String.format("'%s',", option.getAnswer());
             datasets += String.format("'%d',", option.getNumber());
         }
         options = options.substring(0, options.length()-1);
@@ -132,32 +130,11 @@ public class StatisticsManager {
     private static String getBarGraph(Voting voting) {
         String datasets = "";
         for(Option o : voting.getQuestion().getOptions()){
-            String dataset = String.format("{label:'%s',data:[%d]},", o.getOption(), o.getNumber());
+            String dataset = String.format("{label:'%s',data:[%d]},", o.getAnswer(), o.getNumber());
             datasets+=dataset;
         }
         datasets = datasets.substring(0, datasets.length()-1);
 
         return String.format("https://quickchart.io/chart?c={type:'%s',data:{labels:['%s'], datasets:[%s]}}", ChartType.BAR.toString().toLowerCase(), voting.getQuestion().getDesc(), datasets);
-    }
-
-
-    public static Voting getExampleVoting(){
-        Voting voting = new Voting();
-        Question q = new Question();
-        q.setDesc("Descripción de prueba");
-        Option o1 = new Option();
-        Option o2 = new Option();
-        Option o3 = new Option();
-        o1.setNumber(1);
-        o1.setOption("Option 1");
-        o2.setNumber(2);
-        o2.setOption("Option 2");
-        o3.setNumber(3);
-        o3.setOption("Option 3");
-
-        List<Option> options = List.of(o1, o2, o3);
-        q.setOptions(options);
-        voting.setQuestion(q);
-        return voting;
     }
 }

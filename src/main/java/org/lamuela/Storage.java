@@ -4,10 +4,33 @@ public class Storage {
 
     private Storage() {}
 
-    public static String ADMIN_VOTING_CHANNEL;
+    private static String adminChannelId;
 
-    public static String VOTING_CATEGORY;
+    private static String votingCategoryId;
 
-    public static String ADMIN_VOTING_ROLE;
+    private static String adminRoleId;
 
+    public static String getAdminChannelId() {
+        return adminChannelId;
+    }
+
+    public static void setAdminChannelId(String adminChannelId) {
+        Storage.adminChannelId = adminChannelId;
+    }
+
+    public static String getVotingCategoryId() {
+        return votingCategoryId;
+    }
+
+    public static void setVotingCategoryId(String votingCategoryId) {
+        Storage.votingCategoryId = votingCategoryId;
+    }
+
+    public static String getAdminRoleId() {
+        return adminRoleId;
+    }
+
+    public static void setAdminRoleId(String adminRoleId) {
+        Storage.adminRoleId = adminRoleId;
+    }
 }
