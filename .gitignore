@@ -5,7 +5,7 @@ target/
 
 ### Local Configuration ###
 .env
-**/src/main/**/*.db
+data.db
 
 ### IntelliJ IDEA ###
 .idea/

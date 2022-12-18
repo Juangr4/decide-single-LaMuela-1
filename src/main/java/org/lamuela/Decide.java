@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.lamuela.commands.*;
 import org.lamuela.sqlite3.SQLMethods;
 
+import java.util.Objects;
+
 
 public class Decide {
 
@@ -35,11 +37,11 @@ public class Decide {
 
     private static void setupEnviroment() {
         env = Dotenv.configure().ignoreIfMalformed().ignoreIfMissing().load();
-        Unirest.config().defaultBaseUrl(env.get("decide_host", "http://localhost:8000"));
+        Unirest.config().defaultBaseUrl(getEnvVariable("DECIDE_HOST"));
     }
 
     private static void setupDiscordBot() {
-        JDABuilder jdaBuilder = JDABuilder.createDefault(env.get("TOKEN"));
+        JDABuilder jdaBuilder = JDABuilder.createDefault(getEnvVariable("TOKEN"));
 
         jdaBuilder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
 
@@ -48,8 +50,11 @@ public class Decide {
         jda = jdaBuilder.build();
     }
 
-    public static Dotenv getEnv() {
-        return env;
+    public static String getEnvVariable(String key) {
+        String value = System.getenv(key);
+        if(Objects.isNull(value))
+            value = env.get(key);
+        return value;
     }
 
 }
