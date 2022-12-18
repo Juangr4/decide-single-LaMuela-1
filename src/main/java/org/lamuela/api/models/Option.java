@@ -10,7 +10,7 @@ public class Option {
     private Integer number;
     @Expose
     @SerializedName("option")
-    private String option;
+    private String answer;
 
     public Integer getNumber() {
         return number;
@@ -20,12 +20,12 @@ public class Option {
         this.number = number;
     }
 
-    public String getOption() {
-        return option;
+    public String getAnswer() {
+        return answer;
     }
 
-    public void setOption(String option) {
-        this.option = option;
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
 }

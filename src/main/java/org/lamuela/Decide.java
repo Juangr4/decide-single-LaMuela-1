@@ -6,21 +6,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.lamuela.commands.CommandManager;
-import org.lamuela.commands.CreateChannel;
-import org.lamuela.commands.CreateVoting;
-import org.lamuela.commands.LoginCommand;
-import org.lamuela.commands.ManageVoting;
-import org.lamuela.commands.PerformVoting;
-import org.lamuela.commands.TestCommand;
+import org.lamuela.commands.*;
 import org.lamuela.sqlite3.SQLMethods;
 
 
 public class Decide {
 
-    public static Dotenv env;
+    private static Dotenv env;
 
-    public static JDA jda;
+    private static JDA jda;
 
     public static void main(String[] args) {
         setupEnviroment();
@@ -31,12 +25,12 @@ public class Decide {
 
     private static void registerCommands() {
         jda.addEventListener(new CommandManager());
-        jda.addEventListener(new TestCommand());
         jda.addEventListener(new CreateChannel());
         jda.addEventListener(new CreateVoting());
         jda.addEventListener(new LoginCommand());
         jda.addEventListener(new ManageVoting());
         jda.addEventListener(new PerformVoting());
+        jda.addEventListener(new VotingStatsCommand());
     }
 
     private static void setupEnviroment() {
@@ -52,6 +46,10 @@ public class Decide {
         jdaBuilder.setActivity(Activity.watching("Programing myself"));
 
         jda = jdaBuilder.build();
+    }
+
+    public static Dotenv getEnv() {
+        return env;
     }
 
 }

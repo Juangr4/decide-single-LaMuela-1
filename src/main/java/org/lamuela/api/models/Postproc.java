@@ -16,7 +16,7 @@ public class Postproc {
     private String option;
     @Expose
     @SerializedName("postproc")
-    private Integer postproc;
+    private Integer postProcess;
 
     public Integer getVotes() {
         return votes;
@@ -42,12 +42,12 @@ public class Postproc {
         this.option = option;
     }
 
-    public Integer getPostproc() {
-        return postproc;
+    public Integer getPostProcess() {
+        return postProcess;
     }
 
-    public void setPostproc(Integer postproc) {
-        this.postproc = postproc;
+    public void setPostProcess(Integer postProcess) {
+        this.postProcess = postProcess;
     }
 
 }

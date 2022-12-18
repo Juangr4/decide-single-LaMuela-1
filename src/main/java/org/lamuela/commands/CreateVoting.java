@@ -20,35 +20,37 @@ public class CreateVoting extends ListenerAdapter{
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (!event.getName().equals("createvoting")) return;
-        if (event.getMember().getRoles().stream().noneMatch(r -> r.getId().equals(Storage.ADMIN_VOTING_ROLE)) ||
-            !event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+        if (event.getMember().getRoles().stream().noneMatch(r -> r.getId().equals(Storage.getAdminRoleId()) ||
+                r.getPermissions().contains(Permission.ADMINISTRATOR))) {
             event.reply("No puedes usar este comando.").setEphemeral(true).queue();
             return;
         }
 
-        TextInput name = TextInput.create("name", "Name", TextInputStyle.SHORT)
+        TextInput name = TextInput.create("name", "Nombre", TextInputStyle.SHORT)
+                .setPlaceholder("Nombre que identifique la votación.")
                 .setMinLength(1)
                 .setRequired(true)
                 .build();
 
-        TextInput description = TextInput.create("description", "Description", TextInputStyle.PARAGRAPH)
+        TextInput description = TextInput.create("description", "Descripción", TextInputStyle.PARAGRAPH)
+                .setPlaceholder("Descripción de la votación que desea crear.")
                 .setMinLength(1)
                 .setRequired(true)
                 .build();
 
-        TextInput question = TextInput.create("question", "Question", TextInputStyle.SHORT)
-                .setPlaceholder("Question of the voting")
+        TextInput question = TextInput.create("question", "Pregunta", TextInputStyle.SHORT)
+                .setPlaceholder("Pregunta de la votación")
                 .setMinLength(1)
                 .setRequired(true)
                 .build();
 
-        TextInput option = TextInput.create("options", "Options", TextInputStyle.PARAGRAPH)
-                .setPlaceholder("Options")
+        TextInput option = TextInput.create("options", "Respuestas", TextInputStyle.PARAGRAPH)
+                .setPlaceholder("Respuestas a la pregunta (una respuesta por linea)")
                 .setMinLength(1)
                 .setRequired(true)
                 .build();
 
-        Modal modal = Modal.create("voting", "Voting")
+        Modal modal = Modal.create("create-voting", "Voting")
                 .addActionRows(ActionRow.of(name),ActionRow.of(description),ActionRow.of(question), ActionRow.of(option))
                 .build();
 
@@ -57,16 +59,15 @@ public class CreateVoting extends ListenerAdapter{
     
     @Override
     public void onModalInteraction(@NotNull ModalInteractionEvent event){
-        if(event.getModalId().equals("voting")){
+        if(event.getModalId().equals("create-voting")){
             String name = event.getValue("name").getAsString();
             String description = event.getValue("description").getAsString();
             String question = event.getValue("question").getAsString();
             String options = event.getValue("options").getAsString();
 
-
-            event.reply("Nombre: "+name+" Descripción: "+description+" Pregunta: "+ question+" Opciones: "+options).queue();
-            DecideAPI.createVoting(name, description, question, List.of(options.split(",")));         
-            
+            DecideAPI.createVoting(name, description, question, List.of(options.split("\n")));
+            event.reply("Votación creada correctamente").setEphemeral(true).queue();
+            CreateChannel.updateVoting(event.getGuild());
         }
         
     }

@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 public class ManageVoting extends ListenerAdapter {
-    private final Pattern VOTING_PATTERN = Pattern.compile("^\\w+_voting_(\\d+)$");
-    private final Pattern START_VOTING_PATTERN = Pattern.compile("^start_voting_\\d+$");
-    private final Pattern STOP_VOTING_PATTERN = Pattern.compile("^stop_voting_\\d+$");
+    private final Pattern votingPattern = Pattern.compile("^\\w+_voting_(\\d+)$");
+    private final Pattern startVotingPattern = Pattern.compile("^start_voting_\\d+$");
+    private final Pattern stopVotingPattern = Pattern.compile("^stop_voting_\\d+$");
 
     private static final Map<String, Store> channelsData = new HashMap<>();
 
@@ -31,11 +31,11 @@ public class ManageVoting extends ListenerAdapter {
     public void onButtonInteraction(ButtonInteractionEvent event) {
 
         String buttonId = event.getButton().getId();
-        Matcher matcher = VOTING_PATTERN.matcher(buttonId);
+        Matcher matcher = votingPattern.matcher(buttonId);
         if(!matcher.find()) return;
         String votingId = matcher.group(1);
 
-        if(START_VOTING_PATTERN.matcher(buttonId).matches()) {
+        if(startVotingPattern.matcher(buttonId).matches()) {
             InteractionHook interaction = event.deferReply().setEphemeral(true).complete();
             if(startVotingChannel(votingId, event.getGuild(), event.getMessage())) {
                 interaction.editOriginal("Votacion " + votingId + " comenzada.").queue();
@@ -44,7 +44,7 @@ public class ManageVoting extends ListenerAdapter {
             }
         }
 
-        if(STOP_VOTING_PATTERN.matcher(buttonId).matches()) {
+        if(stopVotingPattern.matcher(buttonId).matches()) {
             InteractionHook interaction = event.deferReply().setEphemeral(true).complete();
             if(deleteVotingChannel(votingId, event.getGuild())) {
                 interaction.editOriginal("Votacion " + votingId + " terminada.").queue();
@@ -56,14 +56,17 @@ public class ManageVoting extends ListenerAdapter {
     }
 
     public static boolean startVotingChannel(String votingId, Guild guild, Message message) {
-        String nameId = String.format("voting-%s", votingId);
-
         Voting voting = DecideAPI.getVotingById(Integer.parseInt(votingId));
         if(Objects.nonNull(voting.getStartDate())) return false;
 
         DecideAPI.updateVoting(voting, "start");
+        createVotingChannel(guild, voting, message);
+        return true;
+    }
 
-        Category category = guild.getCategoryById(Storage.VOTING_CATEGORY);
+    public static void createVotingChannel(Guild guild, Voting voting, Message message) {
+        String nameId = String.format("voting-%d", voting.getId());
+        Category category = guild.getCategoryById(Storage.getVotingCategoryId());
         Role votingRole = guild.createRole().setName(nameId).complete();
 
         EmbedBuilder builder = new EmbedBuilder();
@@ -79,7 +82,7 @@ public class ManageVoting extends ListenerAdapter {
                 actionRows.add(ActionRow.of(actual));
                 actual = new ArrayList<>();
             }
-            actual.add(Button.secondary(String.format("voting_%s_option_%d", votingId, answers.get(i).getNumber()), answers.get(i).getOption()));
+            actual.add(Button.secondary(String.format("voting_%d_option_%d", voting.getId(), answers.get(i).getNumber()), answers.get(i).getAnswer()));
         }
         if(!actual.isEmpty()){
             actionRows.add(ActionRow.of(actual));
@@ -88,7 +91,7 @@ public class ManageVoting extends ListenerAdapter {
         TextChannel channel = category.createTextChannel(nameId)
                 .addPermissionOverride(guild.getPublicRole(), 0, Permission.VIEW_CHANNEL.getRawValue())
                 .addPermissionOverride(
-                        guild.getRoleById(Storage.ADMIN_VOTING_ROLE),
+                        guild.getRoleById(Storage.getAdminRoleId()),
                         Permission.VIEW_CHANNEL.getRawValue(),
                         Permission.MESSAGE_SEND.getRawValue())
                 .addPermissionOverride(
@@ -96,13 +99,11 @@ public class ManageVoting extends ListenerAdapter {
                         Permission.VIEW_CHANNEL.getRawValue(),
                         Permission.MESSAGE_SEND.getRawValue()
                 ).complete();
-        channelsData.put(votingId, new Store(channel.getId(), votingRole.getId(), message.getId()));
+        channelsData.put(String.valueOf(voting.getId()), new Store(channel.getId(), votingRole.getId(), message.getId()));
         channel.sendMessageEmbeds(builder.build()).addComponents(actionRows).queue();
         message.editMessageEmbeds(
-                CreateChannel.generateEmbed(DecideAPI.getVotingById(Integer.parseInt(votingId)))
+                CreateChannel.generateEmbed(DecideAPI.getVotingById(voting.getId()))
         ).queue();
-
-        return true;
     }
 
     private boolean deleteVotingChannel(String votingId, Guild guild) {
@@ -117,7 +118,7 @@ public class ManageVoting extends ListenerAdapter {
         DecideAPI.updateVoting(voting, "stop");
         guild.getTextChannelById(data.channelId).delete().queue();
         guild.getRoleById(data.roleId).delete().queue();
-        guild.getTextChannelById(Storage.ADMIN_VOTING_CHANNEL).retrieveMessageById(data.messageId).complete()
+        guild.getTextChannelById(Storage.getAdminChannelId()).retrieveMessageById(data.messageId).complete()
                 .editMessageEmbeds(
                     CreateChannel.generateEmbed(DecideAPI.getVotingById(Integer.parseInt(votingId)))
                 ).queue();
