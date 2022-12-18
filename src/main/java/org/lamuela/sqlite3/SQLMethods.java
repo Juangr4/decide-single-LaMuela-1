@@ -1,6 +1,8 @@
 package org.lamuela.sqlite3;
 
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SQLMethods {
 
@@ -14,7 +16,7 @@ public class SQLMethods {
                 statement.executeUpdate("create table if not exists user (id integer primary key, discUser string, token string, username string, password string)");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.getLogger("Sqlite").log(Level.INFO, "No se ha podido crear la tabla de usuarios", e);
         }
     }
 
@@ -28,7 +30,7 @@ public class SQLMethods {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.getLogger("Sqlite").log(Level.INFO, "No se ha podido insertar el nuevo usuario usuario", e);
         }
     }
 
