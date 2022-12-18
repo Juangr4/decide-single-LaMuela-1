@@ -2,6 +2,7 @@ package org.lamuela.commands;
 
 import java.util.Objects;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -17,11 +18,13 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
+import static org.lamuela.commands.ManageVoting.createVotingChannel;
+
 public class CreateChannel extends ListenerAdapter {
 
     private static final String ROLE_NAME = "voting-admin";
 
-    private static final String CATEGORY_NAME = "decide-voting-2";
+    private static final String CATEGORY_NAME = "decide-voting";
 
     private static final String CHANNEL_NAME = "voting";
 
@@ -32,7 +35,11 @@ public class CreateChannel extends ListenerAdapter {
     }
 
     private static void initBot(Guild guild) {
-        guild.getRolesByName(ROLE_NAME, true).forEach(v -> v.delete().queue());
+        for(Role role: guild.getRoles()) {
+            if(role.getName().equals(ROLE_NAME) || role.getName().matches("voting-(\\d+)")) {
+                role.delete().queue();
+            }
+        }
         guild.getCategoriesByName(CATEGORY_NAME, true).forEach(category -> {
             category.getChannels().forEach(c -> c.delete().queue());
             category.delete().queue();
@@ -54,11 +61,14 @@ public class CreateChannel extends ListenerAdapter {
         Storage.setAdminChannelId(channel.getId());
 
         for (Voting voting: DecideAPI.getAllVotings()) {
-            channel.sendMessageEmbeds(generateEmbed(voting)).addActionRow(
+            Message msg = channel.sendMessageEmbeds(generateEmbed(voting)).addActionRow(
                     Button.primary(String.format("start_voting_%d", voting.getId()), "Empezar votacion"),
                     Button.danger(String.format("stop_voting_%d", voting.getId()), "Terminar votacion"),
                     Button.success(String.format("stats_voting_%d", voting.getId()), "Obtener resultados")
-            ).queue();
+            ).complete();
+            if(Objects.nonNull(voting.getStartDate()) && Objects.isNull(voting.getEndDate())) {
+                createVotingChannel(guild, voting, msg);
+            }
             updateLastIndex(voting.getId());
         }
     }

@@ -20,8 +20,8 @@ public class CreateVoting extends ListenerAdapter{
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (!event.getName().equals("createvoting")) return;
-        if (event.getMember().getRoles().stream().noneMatch(r -> r.getId().equals(Storage.getAdminRoleId())) ||
-            !event.getMember().getPermissions().contains(Permission.ADMINISTRATOR)) {
+        if (event.getMember().getRoles().stream().noneMatch(r -> r.getId().equals(Storage.getAdminRoleId()) ||
+                r.getPermissions().contains(Permission.ADMINISTRATOR))) {
             event.reply("No puedes usar este comando.").setEphemeral(true).queue();
             return;
         }

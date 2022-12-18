@@ -11,8 +11,7 @@ public class SQLMethods {
     public static void initDB(){
         try(Connection connection = DriverManager.getConnection(JDBC_URL)) {
             try(Statement statement = connection.createStatement()) {
-                statement.executeUpdate("drop table if exists user");
-                statement.executeUpdate("create table user (id integer primary key, discUser string, token string, username string, password string)");
+                statement.executeUpdate("create table if not exists user (id integer primary key, discUser string, token string, username string, password string)");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -35,7 +34,7 @@ public class SQLMethods {
 
     public static String getTokenByDiscUser(String discUser){
         try(Connection connection = DriverManager.getConnection(JDBC_URL)) {
-            String token = null;
+            String token;
             try(PreparedStatement statement = connection.prepareStatement("select token from user where discUser = ?")) {
                 statement.setString(1, discUser);
                 token = statement.executeQuery().getString(1);

@@ -56,13 +56,16 @@ public class ManageVoting extends ListenerAdapter {
     }
 
     public static boolean startVotingChannel(String votingId, Guild guild, Message message) {
-        String nameId = String.format("voting-%s", votingId);
-
         Voting voting = DecideAPI.getVotingById(Integer.parseInt(votingId));
         if(Objects.nonNull(voting.getStartDate())) return false;
 
         DecideAPI.updateVoting(voting, "start");
+        createVotingChannel(guild, voting, message);
+        return true;
+    }
 
+    public static void createVotingChannel(Guild guild, Voting voting, Message message) {
+        String nameId = String.format("voting-%d", voting.getId());
         Category category = guild.getCategoryById(Storage.getVotingCategoryId());
         Role votingRole = guild.createRole().setName(nameId).complete();
 
@@ -79,7 +82,7 @@ public class ManageVoting extends ListenerAdapter {
                 actionRows.add(ActionRow.of(actual));
                 actual = new ArrayList<>();
             }
-            actual.add(Button.secondary(String.format("voting_%s_option_%d", votingId, answers.get(i).getNumber()), answers.get(i).getAnswer()));
+            actual.add(Button.secondary(String.format("voting_%d_option_%d", voting.getId(), answers.get(i).getNumber()), answers.get(i).getAnswer()));
         }
         if(!actual.isEmpty()){
             actionRows.add(ActionRow.of(actual));
@@ -96,13 +99,11 @@ public class ManageVoting extends ListenerAdapter {
                         Permission.VIEW_CHANNEL.getRawValue(),
                         Permission.MESSAGE_SEND.getRawValue()
                 ).complete();
-        channelsData.put(votingId, new Store(channel.getId(), votingRole.getId(), message.getId()));
+        channelsData.put(String.valueOf(voting.getId()), new Store(channel.getId(), votingRole.getId(), message.getId()));
         channel.sendMessageEmbeds(builder.build()).addComponents(actionRows).queue();
         message.editMessageEmbeds(
-                CreateChannel.generateEmbed(DecideAPI.getVotingById(Integer.parseInt(votingId)))
+                CreateChannel.generateEmbed(DecideAPI.getVotingById(voting.getId()))
         ).queue();
-
-        return true;
     }
 
     private boolean deleteVotingChannel(String votingId, Guild guild) {
