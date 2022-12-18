@@ -8,7 +8,7 @@ public class SQLMethods {
 
     private SQLMethods(){}
 
-    private static final String JDBC_URL = "jdbc:sqlite:src/main/resources/data.db";
+    private static final String JDBC_URL = "jdbc:sqlite:data.db";
 
     public static void initDB(){
         try(Connection connection = DriverManager.getConnection(JDBC_URL)) {

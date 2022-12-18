@@ -25,7 +25,7 @@ public class DecideAPI {
     private static String adminToken;
 
     private static String getAdminToken() {
-        if(adminToken == null)  adminToken = login(Decide.getEnv().get("decide_user"), Decide.getEnv().get("decide_password")).getToken();
+        if(adminToken == null)  adminToken = login(Decide.getEnvVariable("DECIDE_USER"), Decide.getEnvVariable("DECIDE_PASSWORD")).getToken();
         return adminToken;
     }
 
