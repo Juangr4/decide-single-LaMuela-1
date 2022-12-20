@@ -45,7 +45,7 @@ public class Decide {
 
         jdaBuilder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
 
-        jdaBuilder.setActivity(Activity.watching("Programing myself"));
+        jdaBuilder.setActivity(Activity.watching("Hola clase: Programing myself"));
 
         jda = jdaBuilder.build();
     }
